@@ -577,6 +577,7 @@ function rtrials(k::Int,E::Union{SIRData,SEIRData},seed::Int;
 end
 end # end module
 
+
 ## diffusion functions
 using Base.Iterators, ParallelDataTransfer
 
@@ -616,7 +617,7 @@ function distributed_diffusion(b::Float64,gamma::Float64,qcaps::Vector{Int},vs::
     # @everywhere @eval A=$A
 
     @everywhere @eval b,gamma,tmax,inflb,tdelay,ktrials,a = $b,$gamma,$tmax,$inflb,$tdelay,$ktrials,$a
-    #put array on each processor and just add them up at the end
+    #put array on each thread and just add them up at the end
     nq = length(qcaps)
     @everywhere @eval nq = $nq
     #make dict to make things easier
@@ -654,54 +655,6 @@ function distributed_diffusion(b::Float64,gamma::Float64,qcaps::Vector{Int},vs::
     return res
 end
 
-# function distributed_diffusion(A::SparseMatrixCSC,b::Float64,gamma::Float64,qcaps::Vector{Int},vs::Vector{Int},ktrials::Int;
-#                                 a::Float64=5.0,tdelay::Int=1,inflb::Int=1,tmax::Int = 3500,method::String="sir")
-
-#     #send A everywhere->build E locally->process parameters
-#     @everywhere @eval A=$A
-#     # println(mean(A.nzval))
-#     # println(mean(A.nzval))
-
-#     @everywhere @eval b,gamma,tmax,inflb,tdelay,ktrials,a = $b,$gamma,$tmax,$inflb,$tdelay,$ktrials,$a
-#     #put array on each processor and just add them up at the end
-#     nq = length(qcaps)
-#     @everywhere @eval nq = $nq
-#     #make dict to make things easier
-#     qdict = Dict{Int,Int}()
-#     for (i,val) in enumerate(qcaps)
-#       qdict[val] = i
-#     end
-#     @everywhere @eval qdict = $qdict
-
-
-#     if lowercase(method)=="sir"
-#       @everywhere @eval E = Main.EventEpidemic.SIRData(A,beta=b,gamma=gamma,tmax=tmax,qcap=0)
-#     elseif lowercase(method)=="seir"
-#       @everywhere @eval E = Main.EventEpidemic.SEIRData(A,beta=b,a=a,gamma=gamma,tmax=tmax,qcap=0)
-#     else
-#       @error("method must be either sir or seir")
-#     end
-#     println(typeof(E))
-#     scounts = zeros(Int,size(A,1),length(qcaps))
-#     @everywhere @eval scounts = $scounts
-
-#     #prepping parameters
-#     @everywhere tfun((v,qcapacity,beta)) = epidemic_diffusion(beta,gamma,qcapacity,v,ktrials,tdelay=tdelay,inflb=inflb,tmax=tmax)
-#     ps = vcat(Base.Iterators.product(vs,qcaps,b)...)
-
-#     #diffusion
-#     # for worker in workers()
-#     #   println("worker $worker: sum is $(sum(fetch(remotecall(x->x,workers()[1],scounts)))))")
-#     # end
-#     res = @showprogress pmap(x->tfun(x),ps)
-#     # println("after pmap call")
-#     # for worker in workers()
-#     #   println("worker $worker: sum is $(sum(fetch(remotecall(x->x,workers()[1],scounts)))))")
-#     # end
-#     return res
-# end
-
-#end new mutable fcns
 
 # ( base graph triangles * beta ) = (rewired triangles * new beta)
 function _find_triangle_beta(num_tris,beta,num_newtris)
