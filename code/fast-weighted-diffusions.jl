@@ -1,7 +1,10 @@
 ##
 using Distributed,ProgressMeter
 # addprocs(2)
-@everywhere mainDir ="/p/mnt/scratch/network-epi/" 
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+
+@everywhere mainDir = $mainDir 
 @everywhere include(joinpath(mainDir,"code/fast-diffusion1.jl"))
 @everywhere include(joinpath(mainDir,"code/graph-io.jl"))
 @everywhere include(joinpath(mainDir,"code/data-io.jl"))

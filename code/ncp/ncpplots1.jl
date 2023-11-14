@@ -27,7 +27,11 @@ using CategoricalArrays
 using Plots
 
 ##
-include("hexbins1.jl")
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+
+include(joinpath(mainDir,"code","ncp","hexbins1.jl"))
+
 using StatsBase, Plots
 function myhexbin(x,y;nbins=100)
   hexhist = HexBinPlots.fit(HexBinPlots.HexHistogram,log10.(x),log10.(y),nbins)

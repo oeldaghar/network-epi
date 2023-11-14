@@ -1,3 +1,8 @@
+#=
+modified from 
+https://raw.githubusercontent.com/RalphAS/HexBinPlots.jl/master/src/HexBinPlots.jl
+=#
+
 module HexBinPlots
 export hexbins
 

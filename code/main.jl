@@ -1,28 +1,30 @@
-working_dir = "/p/mnt/scratch/network-epi/"
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+
 #set up 
-include(joinpath(working_dir,"code","graph-io.jl"))
+include(joinpath(mainDir,"code","graph-io.jl"))
 
 #sets up directories
 println("setting things up") 
-include(joinpath(working_dir,"input","setup.jl"))
+include(joinpath(mainDir,"input","setup.jl"))
 
 #rewire base graphs 
 println("Performing graph rewirings")
-include(joinpath(working_dir,"code","rewiring.jl"))
+include(joinpath(mainDir,"code","rewiring.jl"))
 
 ### ncp computaions 
 #acl ncp
 println("working on acl ncp")
-include(joinpath(working_dir,"code","ncp","ncp-acl-script.jl"))
+include(joinpath(mainDir,"code","ncp","ncp-acl-script.jl"))
 
 #epidemic ncp
 println("working on epidemic ncp")
-include(joinpath(working_dir,"code","ncp","epidemic-ncp-script.jl"))
+include(joinpath(mainDir,"code","ncp","epidemic-ncp-script.jl"))
 
 ### diffusions
 #uniform diffusions
 println("working on uniform diffusions")
-include(joinpath(working_dir,"code","fast-qdiffusions.jl"))
+include(joinpath(mainDir,"code","fast-qdiffusions.jl"))
 
 #triange weighted 
 # println("working on triangle weighted diffusions")

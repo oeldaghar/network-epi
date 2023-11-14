@@ -1,22 +1,24 @@
 using Distributed, ProgressMeter
 # addprocs(50)
 
-parent_dir = "/p/mnt/scratch/network-epi/"
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+
 println("Loading scripts on workers")
-@everywhere include(joinpath($parent_dir,"code/fast-diffusion.jl"))
-@everywhere include(joinpath($parent_dir,"code/graph-io.jl")) 
-@everywhere include(joinpath($parent_dir,"code/data-io.jl")) 
+@everywhere include(joinpath($mainDir,"code/fast-diffusion.jl"))
+@everywhere include(joinpath($mainDir,"code/graph-io.jl")) 
+@everywhere include(joinpath($mainDir,"code/data-io.jl")) 
 
 ## plotting fcns
-include(joinpath(parent_dir,"code/ncp/ncpplots1.jl"))
+include(joinpath(mainDir,"code/ncp/ncpplots1.jl"))
 # addprocs(15)
 ENV["GKSwstype"] = "100"
 gpath = "pipeline/graphs/"
 
-@everywhere include(joinpath($parent_dir,"code/ncp/parallel-epidemic-ncp.jl"))
+@everywhere include(joinpath($mainDir,"code/ncp/parallel-epidemic-ncp.jl"))
 println("scripts loaded")
 
-gs = readdir(joinpath(parent_dir,"input/graphs/"))
+gs = readdir(joinpath(mainDir,"input/graphs/"))
 filter!(x->endswith(x,".smat"),gs)
 #ignoring these for now 
 filter!(c->!occursin("livejournal",lowercase(c)),gs)
@@ -69,10 +71,10 @@ push!(gs,getgnames("study-25","input/graphs/")...)
 for model in ["seir"]#,"sir"]
     for gname in gs
         g = canonical_graph_name(gname)
-        dst = joinpath(parent_dir,"pipeline/data/$(g[1:end-5])/ncpdata/")
+        dst = joinpath(mainDir,"pipeline/data/$(g[1:end-5])/ncpdata/")
         fnames = readdir(dst)
         #check number of nodes to decide if we want to do extremal graphs too
-        basegraph_path = joinpath(parent_dir,"input","graphs",gname)
+        basegraph_path = joinpath(mainDir,"input","graphs",gname)
         # if parse(Int,split(readline(basegraph_path)," ")[1])<1000000 #more than 1M nodes
         #     gnames = [gname, "rewired-10000.0-$gname", "er-10000.0-$gname"]
         # else 
@@ -97,8 +99,8 @@ end
 # total_trials = 50000
 # for model in ["seir","sir"]
 #     for gname in gs
-#         dst = joinpath(parent_dir,"pipeline/data/$(gname[1:end-5])/ncpdata/")
-#         imgdst = joinpath(parent_dir,"pipeline/data/$(gname[1:end-5])/imgs/")
+#         dst = joinpath(mainDir,"pipeline/data/$(gname[1:end-5])/ncpdata/")
+#         imgdst = joinpath(mainDir,"pipeline/data/$(gname[1:end-5])/imgs/")
 #         fnames = readdir(dst)
 #         for h in [gname, "rewired-10000.0-$gname", "er-10000.0-$gname"]
 #             println("working on $(uppercase(model)) for $h")
@@ -267,7 +269,7 @@ figs[11]
 # joinpath(parentDir,"$(gname[1:end-5])","ncpdata")
 
 
-dst = joinpath(parent_dir,"pipeline/data/$(gs[1][1:end-5])/ncpdata/")
+dst = joinpath(mainDir,"pipeline/data/$(gs[1][1:end-5])/ncpdata/")
 fnames = readdir(dst)
 filter!(c->occursin("worker",c),fnames)
 =#

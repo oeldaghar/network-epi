@@ -1,7 +1,10 @@
 ##
 using Distributed,ProgressMeter
 # addprocs(2)
-@everywhere mainDir ="/p/mnt/scratch/network-epi/" 
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+
+@everywhere mainDir = $mainDir 
 @everywhere include(joinpath(mainDir,"code/fast-diffusion.jl"))
 @everywhere include(joinpath(mainDir,"code/graph-io.jl"))
 @everywhere include(joinpath(mainDir,"code/data-io.jl"))
@@ -9,15 +12,12 @@ using Distributed,ProgressMeter
 gpath = joinpath(mainDir,"pipeline/graphs/")
 parentDst = joinpath(mainDir,"pipeline/data/")
 
-# gs = ["mexico","anony","dblp-cc",
-#     "study-11-45","study-11-50",
-#     "cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5",
-#     "cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5",
-#     "cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17.smat",
-#     "enron","uf","commutes","astro","penn","ucf",
-#     "usf","modberkeley","modfsu","modharvard","modnotre-dame","modstanford",
-#     "moduillinois","modunc","modwisconsin"]#,"flickr","livejournal"]
 
+"""
+    read_inf_data(gname;dloc=dloc,beta=0.1,gamma=0.05,method="seir",dtype="cinfs")
+
+main function for loading in raw epidemic data from files. 
+"""
 function read_inf_data(gname;dloc=dloc,beta=0.1,gamma=0.05,method="seir",dtype="cinfs")
     if endswith(gname,".smat")
         g = gname[1:end-5]
@@ -43,31 +43,14 @@ qpercents = collect(0:15)
 nnodes,ktrials = 50,1
 tmax = 30000
 
-# function _checkgraph_old(gname::String,bs::Vector{Float64};dst::String="",gamma::Float64=0.05,method::String="sir",
-#                         qpercents::Vector{T}=collect(0:15),nnodes::Int=50) where T<:Union{Int,Float64}
-#     """checks to see if we have already run diffusions for this graph"""
-#     if endswith(gname,".smat")
-#         g = gname[1:end-5]
-#     else
-#         g = gname
-#     end
+"""
+    _checkgraph(gname::String,bs::Vector{Float64};dst::String="",gamma::Float64=0.05,method::String="sir",
+                        qpercents::Vector{T}=collect(0:15),nnodes::Int=50) where T<:Union{Int,Float64}
 
-#     fnames = filter(c->endswith(c,".txt") && occursin(g,c),readdir(dst))
-#     betabool = ones(Bool,length(bs)) #indicates if we need to run bs[i] or not
-#     for (i,b) in enumerate(bs)
-#         if "tinfs-$g-$method-$b-$gamma.txt" in fnames && "cinfs-$g-$method-$b-$gamma.txt" in fnames && "scounts-$g-$method-$b-$gamma.txt" in fnames
-#             tinfs = read_inf_data(g,dloc=dst,beta=b,gamma=gamma,method=method,dtype="tinfs")
-#             if length(tinfs)==length(qpercents)*nnodes 
-#                 betabool[i] = false #files exist and are of right length
-#             end
-#         end
-#     end
-#     return betabool
-# end
-
+checks to see if we have already run diffusions for this graph. 
+"""
 function _checkgraph(gname::String,bs::Vector{Float64};dst::String="",gamma::Float64=0.05,method::String="sir",
                         qpercents::Vector{T}=collect(0:15),nnodes::Int=50) where T<:Union{Int,Float64}
-    """checks to see if we have already run diffusions for this graph"""
     if endswith(gname,".smat")
         g = gname[1:end-5]
     else
@@ -127,51 +110,7 @@ end
 bs = unique(vcat(1e-3:1e-3:1e-2,2e-2:1e-2:1e-1,1.1e-1:1e-2:2e-1))
 qpercents = collect(0:15)
 
-# gs = [ "study-11-2023-0-noweak.smat",
-#     "study-11-2022-1.smat",
-#     # "study-11-2022-10.smat",
-#     # "study-11-2022-20.smat",
-#     # "study-11-2022-30.smat",
-#     # "study-11-2022-40.smat",
-#     # "study-11-2022-45.smat",
-#     "study-11-2022-50.smat",
-#     # "study-20-draft-150.smat",
-# ]
 
-# gs = [
-#     # "commutes-all.smat","modmexico-city.smat", "covidflows-2020_08_31-filtered-20.smat", #row1
-#     # "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
-#     # "dblp","enron","anon", #row 3
-#     # "cit-HepPh", "slashdot", "flickr", 
-#     # "geometric",
-#     # "cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5",
-#     "study-11-2023-0-noweak.smat",
-#     # "study-11-2023-1-longrange-1.smat",
-#     # "study-11-2023-1-longrange-2.smat",
-#     # "study-11-2023-1-longrange-3.smat",
-#     # "study-11-2023-1-longrange-5.smat",
-#     # "study-11-2023-1-longrange-8.smat",
-#     # "study-11-2023-1-longrange-10.smat",
-#     # "study-11-2023-1-longrange-12.smat",
-#     # "study-11-2023-1-longrange-15.smat",
-#     "study-11-2022-1.smat",
-#     "study-11-2022-10.smat",
-#     "study-11-2022-20.smat",
-#     "study-11-2022-30.smat",
-#     "study-11-2022-40.smat",
-#     "study-11-2022-50.smat",
-# ]
-
-# gs = [  
-#             # "modmexico-city.smat",
-#             # "commutes-all.smat",
-#             # "covidflows-2020_08_31.smat",
-#             # "covidflows-2020_08_31-filtered-20.smat",
-#             "study-20-draft-150.smat",
-#             # "study-25-1.smat",
-#             # "study-25-2.smat",
-#             # "study-25-150.smat"
-#             ]
 gs = [
     "internal-shuffled-cl-louvain-0-1-study-25-1.smat",
     "internal-shuffled-cl-louvain-1-1-study-25-1.smat",
@@ -180,20 +119,7 @@ gs = [
 ]
 
 
-# gs = ["internal-shuffled-cl-louvain-0-$gname" for gname in gs]
-
-# gs = getgnames("study-11-2022","input/graphs/")
-# push!(gs,getgnames("noweak","input/graphs/")...)
-
-# gs = getgnames("study-25","input/graphs/")
-# gs = getgnames("study-25-150","input/graphs/")
-
-# gs = ["study-24-2.smat","study-24-100.smat"]
-# gs = map(x->getgnames(x,"input/graphs/")[1],gs)
-
-# gs = getgnames("longrange-5-","input/graphs/")
-
-#sort by number of edges in graph
+#sort by number of edges in graph. prioritizes faster diffusions first 
 p = sortperm(map(x->get_graph_stats(x,gpath="input/graphs/")[2],gs))
 gs = gs[p]
 
@@ -223,6 +149,7 @@ for method in ["seir"]#,"sir"]
     end
 end
 
+#code for doing this instead using epidemic strength (lambda_1*beta/gamma). often thought of as a generalization of R0
 #=
 R0s = [1.1, 5, 10, 20, 25, 26, 27, 28, 29, 30, 35, 40, 45, 50, 60, 75]
 

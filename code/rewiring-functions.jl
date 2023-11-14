@@ -1,6 +1,11 @@
 using MatrixNetworks, LinearAlgebra, Random, SparseArrays#, Sparsification
 
 
+"""
+    _undirected_edges(A::SparseMatrixCSC;use_diag::Bool = false)
+
+given a graph A, retrieve undirected edges from A for rewiring
+"""
 function _undirected_edges(A::SparseMatrixCSC;use_diag::Bool = false)
   rowval = rowvals(A)
   n = size(A,2)
@@ -37,6 +42,7 @@ function rewire_edges(edges::Vector{Tuple{T,T}},
   end
   return edges
 end
+
 function rewire_graph(A::SparseMatrixCSC, k::Integer=ceil(Int,nnz(A)*log(nnz(A))))
   # @assert is_undirected(A)
   new_edges = rewire_edges(_undirected_edges(A),k)
@@ -58,6 +64,7 @@ function er_rewire_edges(nnodes::Int,edges::Vector{Tuple{T,T}},
   end
   return edges
 end
+
 function er_rewire_graph(A::SparseMatrixCSC, k::Integer=ceil(Int,nnz(A)*log(nnz(A))))
   # @assert is_undirected(A)
   new_edges = er_rewire_edges(size(A,1),_undirected_edges(A),k)
@@ -69,7 +76,7 @@ end
 
 
 #triangle rewiring 
-#not quite faithful to triangles and degree but good enough for our purposes
+#not quite faithful to triangles and degree after projecting to pariwise
 using SparseMatrixDicts, MatrixNetworks, SparseArrays, ProgressMeter,Random 
 function random_triplet(n::Int)
   while true

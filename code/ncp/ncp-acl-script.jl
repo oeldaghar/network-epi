@@ -1,21 +1,21 @@
 using ProgressMeter
 using Distributed
 # addprocs(25)
-gpath = "input/graphs/"
-@everywhere dstDir = "pipeline/data/"
-@everywhere parentDir = "/p/mnt/scratch/network-epi/"
+
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+@everywhere mainDir = $mainDir
+
+gpath = joinpath(mainDir,"input/graphs/")
+@everywhere dstDir = joinpath(mainDir,"pipeline/data/")
 #headless display mode for server when using GR backend for plotting. see the following
 #https://discourse.julialang.org/t/generation-of-documentation-fails-qt-qpa-xcb-could-not-connect-to-display/60988
 ENV["GKSwstype"] = "100"
-@everywhere include(joinpath(parentDir,"code/graph-io.jl"))
-@everywhere include(joinpath(parentDir,"code/ncp/ncp-acl.jl"))
-# gnames = getgnames("longrange","input/graphs/")
+@everywhere include(joinpath(mainDir,"code/graph-io.jl"))
+@everywhere include(joinpath(mainDir,"code/ncp/ncp-acl.jl"))
+
 gnames = readdir(gpath)
 filter!(x->endswith(x,".smat"),gnames)
-
-#ignoring these for now 
-filter!(c->!occursin("flickr",lowercase(c)),gnames)
-filter!(c->!occursin("livejournal",lowercase(c)),gnames)
 
 gnames = [getgnames(x,"pipeline/graphs/") for x in gnames]
 for (i,x) in enumerate(gnames)
@@ -23,6 +23,10 @@ for (i,x) in enumerate(gnames)
         filter!(x->!occursin("cn-",x),gnames[i])
     end
 end
+
+#sort gnames by number of edges 
+p = sortperm(map(x->get_graph_stats(canonical_graph_name(x))[2],gnames))
+gnames = gnames[p]
 
 dsts = joinpath.(dstDir,map(x->first(x)[1:end-5],gnames),"ncpdata/")
 dsts = repeat.([[x] for x in dsts],length.(gnames))

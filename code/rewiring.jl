@@ -1,33 +1,32 @@
 # script for rewiring graphs. see https://arxiv.org/abs/1202.3473 for
 #discussion about threshold for rewiring.
-# cd("/p/mnt/scratch/network-epi/")
-mainDir ="/p/mnt/scratch/network-epi/" 
 
-include(joinpath(mainDir,"code","rewiring-functions.jl"))
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+
 include(joinpath(mainDir,"code","graph-io.jl"))
+include(joinpath(mainDir,"code","rewiring-functions.jl"))
 
 using Distributions, Random
 gpath = joinpath(mainDir,"input/graphs/")
 gdst = joinpath(mainDir,"pipeline/graphs/")
 
 rewiring_ps = vec([0.0001 0.0005 0.001 0.005 0.01 0.05 0.1 0.25 0.5 1.0 10.0 100.0])
-alt_rewiring_ps = vec([0.001 0.01 0.1 1.0 100.0])
+#for large graphs (flickr)
+alt_rewiring_ps = vec([0.001 0.01 0.1 1.0 100.0]) 
+
 
 gnames = readdir(gpath)
-# gnames = getgnames("internal","/p/mnt/scratch/network-epi/input/graphs/")
-gnames = getgnames("study-25-1.smat","/p/mnt/scratch/network-epi/input/graphs/")
 filter!(x->endswith(x,".smat"),gnames)
 params = Dict{String,Vector{Float64}}()
 for gname in gnames 
     params[gname] = deepcopy(rewiring_ps)
 end
 
-#special handling for large graphs (flickr, livejournal, cit-Patents)
+#special handling for large graphs (flickr)
 params[getgnames("flickr",gpath)[1]] = deepcopy(alt_rewiring_ps)
-params[getgnames("livejournal",gpath)[1]] = deepcopy(alt_rewiring_ps)
-params[getgnames("cit-Patents",gpath)[1]] = deepcopy(alt_rewiring_ps)
 
-#filter out graphs we've already rewired
+#filter out graphs we've already rewired 
 function filter_rewired_graphs(gname::String,gdst::String)
     graphnames = include_graph(gname,gdst)
     bool = all(map(x->"rewired-$(round(x*100,digits=2))-$gname" in graphnames,params[gname]))
@@ -87,8 +86,6 @@ end
 
 #custom params for certain graphs 
 params[getgnames("flickr",gpath)[1]] = [0.1;0.5;1.0]
-params[getgnames("livejournal",gpath)[1]] = [0.1;0.5;1.0]
-params[getgnames("cit-Patents",gpath)[1]] = [0.1;0.5;1.0]
 
 #filter out graphs we've already rewired
 function filter_rewired_graphs(gname::String,gdst::String)

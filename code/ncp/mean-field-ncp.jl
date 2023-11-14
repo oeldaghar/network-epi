@@ -15,8 +15,12 @@
 using LinearAlgebra
 using MatrixNetworks
 using SparseArrays
-include("code/fast-diffusion.jl")
-include("code/graph-io.jl")
+
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+
+include(joinpath(mainDir,"code/fast-diffusion.jl"))
+include(joinpath(mainDir,"code/graph-io.jl"))
 
 # function evolve_simple!(X::Matrix, Y::Matrix, t::Int, p::Real, gamma::Real, A::AbstractMatrix)
 #   @assert(t > 1)

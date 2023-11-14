@@ -2,10 +2,12 @@
 using Distributed, Plots, Interact, DataFrames
 using MatrixNetworks, SparseArrays, LinearAlgebra, Distributions, DelimitedFiles, ProgressMeter, Random, Plots, CSV
 
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
 
 ## ncp computation
-include("diffusions.jl")
-include("ncpplots1.jl")
+include(joinpath(mainDir,"code","ncp","diffusions.jl"))
+include(joinpath(mainDir,"code","ncp","ncpplots1.jl"))
 # ENV["GKSwstype"] = "100"
 
 # helper functions
