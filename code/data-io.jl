@@ -2,7 +2,6 @@ using ProgressMeter
 # using SparseArrays
 
 ## functions for loading in infection data 
-#for loading in data 
 function read_inf_data(gname;dloc=dloc,beta=0.1,gamma=0.05,method="sir",dtype="cinfs",exp=5.0)
     if endswith(gname,".smat")
         g = gname[1:end-5]
@@ -10,11 +9,7 @@ function read_inf_data(gname;dloc=dloc,beta=0.1,gamma=0.05,method="sir",dtype="c
         g = gname
     end
 
-    if beta!=0
-        fname = dloc*"$dtype-$g-$method-$beta-$gamma.txt"
-    else
-        fname = dloc*"$dtype-$g-$method-$exp.txt"
-    end
+    fname = dloc*"$dtype-$g-$method-$beta-$gamma.txt"
     
     if lowercase(dtype)=="cinfs" || lowercase(dtype)=="tinfs"
         res = Vector{Vector{Int}}()
@@ -30,7 +25,21 @@ function read_inf_data(gname;dloc=dloc,beta=0.1,gamma=0.05,method="sir",dtype="c
 end
 
 ## functions for getting parameters from diffusion data 
+"""
+    sort_fnames(gname::String;
+                beta::Float64=0.05,
+                gamma::Float64=0.05,
+                # rps::Vector{Float64}=vec([0.0001 0.0005 0.001 0.005 0.01 0.05 0.1 0.25 0.5 1.0 10.0 100.0]),
+                dloc::String="pipeline/data/",
+                dtype::String="tinfs",
+                method::String="seir",
+                rewiring_type::String="-rewired-",
+                diffusion_type::String="uniform")
 
+given gname and diffusion parameters, get graphs of that type and sort the file names by rewiring fraction
+
+returns rewired_gnames and rewiring_fractions
+"""
 function sort_fnames(gname::String;
                 beta::Float64=0.05,
                 gamma::Float64=0.05,
@@ -40,11 +49,7 @@ function sort_fnames(gname::String;
                 method::String="seir",
                 rewiring_type::String="-rewired-",
                 diffusion_type::String="uniform")
-    """
-        given gname and diffusion parameters, get graphs of that type and sort the file names by rewiring fraction
 
-        returns rewired_gnames and rewiring_fractions
-    """
 
 
     if endswith(gname,".smat")
@@ -70,6 +75,11 @@ end
 # - "uniform" diffusions 
 # - "seir" model
 
+"""
+    get_betas(gname::String)
+
+given gname, get all betas associated with the canoical graph name. currently does this for uniform diffusions for SEIR
+"""
 function get_betas(gname::String)
     g = canonical_graph_name(gname)[1:end-5]
     #find all betas
@@ -83,7 +93,21 @@ function get_betas(gname::String)
 end
 
 ##
+"""
+    load_single_rewiring_data(gname::String;
+                            beta::Float64=0.05,
+                            gamma::Float64=0.05,
+                            # rps::Vector{Float64}=vec([0.0001 0.0005 0.001 0.005 0.01 0.05 0.1 0.25 0.5 1.0 10.0 100.0]),
+                            dloc::String="pipeline/data/",
+                            dtype::String="tinfs",
+                            method::String="seir",
+                            rewiring_type::String="triange-rewired",
+                            diffusion_type::String="triangle-weighted")
 
+given gname and other diffusion paramaters, load in an array X of the format 
+
+rewiring_percent (rows) vs qpercent (cols) 
+"""
 function load_single_rewiring_data(gname::String;
                             beta::Float64=0.05,
                             gamma::Float64=0.05,
@@ -93,11 +117,6 @@ function load_single_rewiring_data(gname::String;
                             method::String="seir",
                             rewiring_type::String="triange-rewired",
                             diffusion_type::String="triangle-weighted")
-    """
-        given gname and other diffusion paramaters, load in an array X of the format
-
-        rewiring_percent (rows) vs (qpercent \times nnodes in trial) (cols)
-    """
 
     if endswith(gname,".smat")
         gname = gname[1:end-5]
@@ -117,7 +136,22 @@ function load_single_rewiring_data(gname::String;
     return data,rewiring_fractions
 end
 
+"""
+    load_double_rewiring_data(gname::String;
+                            beta::Float64=0.05,
+                            gamma::Float64=0.05,
+                            # rps::Vector{Float64}=vec([0.0001 0.0005 0.001 0.005 0.01 0.05 0.1 0.25 0.5 1.0 10.0 100.0]),
+                            dloc::String="pipeline/data/",
+                            dtype::String="tinfs",
+                            method::String="seir",
+                            rewiring_type1::String="rewired",
+                            rewiring_type2::String="er",
+                            diffusion_type::String="uniform")
 
+given gname and other diffusion paramaters, load in an array X of the format
+
+rewiring_percent (rows) vs qpercent (cols)
+"""
 function load_double_rewiring_data(gname::String;
                             beta::Float64=0.05,
                             gamma::Float64=0.05,
@@ -128,12 +162,6 @@ function load_double_rewiring_data(gname::String;
                             rewiring_type1::String="rewired",
                             rewiring_type2::String="er",
                             diffusion_type::String="uniform")
-    """
-        given gname and other diffusion paramaters, load in an array X of the format
-
-        rewiring_percent (rows) vs (qpercent \times nnodes in trial) (cols)
-    """
-
     if endswith(gname,".smat")
         gname = gname[1:end-5]
     end
@@ -255,7 +283,7 @@ end
 """
     aggregate_diffusion_data(data,ntrials::Int=50)
 
-aggregates diffusion data to return a matrix of size (# quarantine parameters × # network rewirings)
+aggregates diffusion data to return a matrix of size (num. quarantine parameters × num network rewirings)
 """
 function aggregate_diffusion_data(data,ntrials::Int=50)
     nrows,ncols = size(data)
@@ -273,16 +301,14 @@ end
 
 
 """
-    load_triangle_diffusion_data(gname::String
+    load_triangle_diffusion_data(gname::String,
                             beta::Float64=0.05,
                             gamma::Float64=0.05,
                             dloc::String="pipeline/data/",
                             dtype::String="tinfs",
-                            method::String="seir",
-                            rewiring_type::String="triange-rewired",
-                            diffusion_type::String="triangle-weighted")
+                            method::String="seir")
 
-TBW
+load plotting data for triangle weighted diffusions    
 """
 function load_triangle_diffusion_data(gname::String,
                             beta::Float64=0.05,
@@ -316,6 +342,18 @@ function load_triangle_diffusion_data(gname::String,
     return data,rewiring_fractions
 end
 
+
+"""
+    get_triangle_diffusions_plotting_data(gname::String,
+                                    beta::Float64=0.05,
+                                    gamma::Float64=0.05,
+                                    dloc::String="pipeline/data/",
+                                    dtype::String="tinfs",
+                                    method::String="seir",
+                                    ntrials::Int=50)
+
+load aggregated plotting data for triangle weighted diffusions
+"""
 function get_triangle_diffusions_plotting_data(gname::String,
                                     beta::Float64=0.05,
                                     gamma::Float64=0.05,
@@ -351,6 +389,14 @@ function get_triangle_diffusions_plotting_data(gname::String,
 end
 
 
+"""
+    get_rewired_data(gnames::Vector{String})
+
+
+given graphs gnames, load all diffusion data for all graphs and store as a dictionary
+
+so result[gname][beta] = diffusion data for gname when using beta 
+"""
 function get_rewired_data(gnames::Vector{String})
     result = Dict{String,Dict{Float64,Array}}()
     println("loading data")
