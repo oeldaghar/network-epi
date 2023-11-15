@@ -126,72 +126,6 @@ end
 
 #TODO normalize by number of nodes in base graph but only load in graph once
 
-
-# function qpercent_contours(gname::String;
-#         betas::Vector{Float64}=vcat(1e-3:1e-3:1e-2,2e-2:1e-2:1e-1),
-#         gammas::Vector{Float64}=[0.05],
-#         gpath::String="pipeline/graphs/",
-#         dloc::String="pipeline/data/",
-#         dtype::String="tinfs",
-#         method::String="seir",
-#         rewiring_type1::String="rewired",
-#         rewiring_type2::String="er",
-#         diffusion_type::String="uniform",
-#         ntrials::Int=50,
-#         qpercents::Vector{Int}=collect(0:15),
-#         add_labels::Bool=true,
-#         colorbar::Bool=true)
-
-
-#     pyplot()
-#     #for saving figs
-#     full,aggregated = Vector(), Vector()
-
-#     #main loop 
-#     @showprogress for beta in betas
-#         for gamma in gammas
-#             #should be a more julia centric way to do this.
-#             data,aggregated_data,clabel,rewiring_fractions1,rewiring_fractions2 = get_plotting_data(gname,beta=beta,
-#                 gamma=gamma,gpath=gpath,dloc=dloc,dtype=dtype,method=method,
-#                 rewiring_type1=rewiring_type1,rewiring_type2=rewiring_type2,
-#                 diffusion_type=diffusion_type,ntrials=ntrials,qpercents=qpercents)
-#             #rewiring percentages
-#             rps = vcat(rewiring_fractions1,["0.0"],rewiring_fractions2)
-#             # #contour plot for full data
-#             xlab,ylab,title = "","",""
-#             if add_labels
-#                 ylab = "quarantine percentage"
-#                 xlab = "     Powerlaw ⟺ Original ⟺ Erdos Renyi\nRewiring Percent"
-#                 title = "$(gname[1:end-5]) - $(uppercase(method))($beta,$gamma)\n$(ntrials) node sample"
-#             end
-
-#             f = Plots.contourf(1:length(rps),1:size(data,1),(x,y)->data[y,x],
-#                 ylabel=ylab,
-#                 xlabel=xlab,
-#                 title=title,
-#                 colorbar_title=clabel,c=:heat,clims=(0,1),
-#                 yticks=(collect(round(Int,ntrials/2):ntrials:size(data,1)),qpercents),xrotation = 90,levels=0.0:0.2:1.0)
-                
-#             Plots.plot!(f,xticks=(1:length(rps), vec(rps)),margins=9Measures.mm)
-#             push!(full,f)
-         
-#             #contour plot for aggreagted data
-#             f1 = Plots.contourf(1:length(rps),1:length(qpercents),(x,y)->aggregated_data[y,x],
-#                 ylabel=ylab,
-#                 xlabel=xlab,
-#                 title=title,
-#                 colorbar=colorbar,
-#                 c=:heat,colorbar_title=clabel,clims=(0,1),
-#                 yticks=(1:length(qpercents),qpercents),xrotation = 90,levels=0.0:0.2:1.0)
-                
-#             Plots.plot!(f1,xticks=(1:length(rps), vec(rps)),margins=9Measures.mm)
-#             push!(aggregated,f1)
-
-#         end
-#     end    
-#     return full,aggregated
-# end
-
 # #for v1.8.0 plotting 
 function qpercent_contours(gname::String;
         betas::Vector{Float64}=vcat(1e-3:1e-3:1e-2,2e-2:1e-2:1e-1),
@@ -569,25 +503,6 @@ ybounds = [(91,280),(1,500),(18,65),
     (22,82),(7,142),(-45,1350),    
     (14.8,18.6),(29,105),(5,31),
 ]
-
-# hs = ["dblp","enron","cit-HepPh", #row 1
-#     "anon", "slashdot", "flickr", #row2
-#     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row3...
-#     "commutes-all","mexico", "filtered",
-#     "geometric","study-11-2022-45","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
-#     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
-# gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
-# titles = ["Collaboration", "Email", "Citation",
-#     "Facebook\nInteractions", "Slashdot","Flickr",
-#     "Sparsified\nCollege-Illinois", "Sparsified\nCollege-Penn", "Sparsified\nCollege-Wisc.",
-#     "US Commutes", "Mexico City Trace", "Filtered US Flows",
-#     "Local\nGeometric", "Geometric\nCommunities", "Random Walk\nCommunities"]
-# ybounds = [(2,82),(4,128),(22,82),
-#     (4,23),(7,142),(-45,1350),
-#     (3,31),(2.5,38),(3,25),
-#     (91,280),(1,500),(18,65),
-#     (14.8,18.6),(23,55),(5,31),
-# ]
 
 ps = map(x -> plot_eigenvalues(x),gnames)
 ps = vcat(ps...)
