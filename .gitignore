@@ -1,3 +1,6 @@
 input/graphs/
+!input/graphs/study-20-draft-150.smat
+!input/graphs/study-20-draft-150.xy
 pipeline/
 code/paper-figs/*
+!code/paper-figs/*.jl
