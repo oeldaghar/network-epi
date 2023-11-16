@@ -2,7 +2,7 @@
 #discussion about threshold for rewiring.
 
 #allows for execution from command line as well as an ide so files can be run modularlly
-mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
 
 include(joinpath(mainDir,"code","graph-io.jl"))
 include(joinpath(mainDir,"code","rewiring-functions.jl"))

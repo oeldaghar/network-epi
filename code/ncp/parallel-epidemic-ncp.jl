@@ -2,7 +2,7 @@
 #initialize graph and epidemic data structure
 #pmap(beta,trial) -> run diffusion and return relevant results
 #assumes A and E are loaded locally on processor
-using Distributed, ProgressMeter, CSV
+using Distributed, ProgressMeter
 
 using MatrixNetworks, LinearAlgebra, SparseArrays, DataFrames
 

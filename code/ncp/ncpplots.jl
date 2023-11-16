@@ -22,7 +22,8 @@ using CategoricalArrays
 using Plots
 
 ##
-include("hexbins.jl")
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
+include(joinpath(mainDir,"code","ncp","hexbins.jl"))
 using StatsBase, Plots
 function myhexbin(x,y;nbins=100)
   hexhist = fit(HexBinPlots.HexHistogram,log10.(x),log10.(y),nbins)

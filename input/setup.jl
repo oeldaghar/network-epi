@@ -1,8 +1,8 @@
 #set up directories and generate rewired graphs.
 #after this script, one needs to run the diffusions and get ncpdata
-parentDir = "/p/mnt/scratch/network-epi/"
-cd(parentDir)
-graphs = readdir("input/graphs/")
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
+cd(mainDir)
+graphs = readdir(joinpath(mainDir,"input/graphs/"))
 filter!(x->endswith(x,".smat"),graphs)
 
 #=
@@ -24,51 +24,51 @@ set up directories
 					plotting-data/
 =#
 
-graphDir = joinpath(parentDir,"pipeline/graphs/")
+graphDir = joinpath(mainDir,"pipeline/graphs/")
 if !ispath(graphDir)
 	mkpath(graphDir)
 end
 
 for graph in graphs
 	#set up directories
-	ncpDir = joinpath(parentDir,"pipeline/data/$(graph[1:end-5])/ncpdata/")
+	ncpDir = joinpath(mainDir,"pipeline/data/$(graph[1:end-5])/ncpdata/")
 	if !ispath(ncpDir)
 		mkpath(ncpDir)
 	end
-	uniformDir = joinpath(parentDir,"pipeline/data/$(graph[1:end-5])/diffusions/uniform/plotting-data/")
+	uniformDir = joinpath(mainDir,"pipeline/data/$(graph[1:end-5])/diffusions/uniform/plotting-data/")
 	if !ispath(uniformDir)
 		mkpath(uniformDir)
 	end
 
 	#for extra parameter testing. won't have data for other graphs 
-	uniformDir = joinpath(parentDir,"pipeline/data/$(graph[1:end-5])/diffusions/uniform/scratch/")
+	uniformDir = joinpath(mainDir,"pipeline/data/$(graph[1:end-5])/diffusions/uniform/scratch/")
 	if !ispath(uniformDir)
 		mkpath(uniformDir)
 	end
 
 	#for study + lfr graph testing 
-	uniformDir = joinpath(parentDir,"pipeline/data/$(graph[1:end-5])/diffusions/uniform/new/")
+	uniformDir = joinpath(mainDir,"pipeline/data/$(graph[1:end-5])/diffusions/uniform/new/")
 	if !ispath(uniformDir)
 		mkpath(uniformDir)
 	end
 
-	triangleDir = joinpath(parentDir,"pipeline/data/$(graph[1:end-5])/diffusions/triangle-weighted/plotting-data/")
+	triangleDir = joinpath(mainDir,"pipeline/data/$(graph[1:end-5])/diffusions/triangle-weighted/plotting-data/")
 	if !ispath(triangleDir)
 		mkpath(triangleDir)
 	end
 	#for new triangle experiments. condense later.
-	triangleDir = joinpath(parentDir,"pipeline/data/$(graph[1:end-5])/diffusions/new-triangle-weighted/plotting-data/")
+	triangleDir = joinpath(mainDir,"pipeline/data/$(graph[1:end-5])/diffusions/new-triangle-weighted/plotting-data/")
 	if !ispath(triangleDir)
 		mkpath(triangleDir)
 	end
 
-	imgDir = joinpath(parentDir,"pipeline/data/$(graph[1:end-5])/imgs/missed-sets/")
+	imgDir = joinpath(mainDir,"pipeline/data/$(graph[1:end-5])/imgs/missed-sets/")
 	if !ispath(imgDir)
 		mkpath(imgDir)
 	end
 	#copy original graph
-	if !isfile(joinpath(parentDir,"pipeline/graphs/$graph"))
-		cp(joinpath(parentDir,"input/graphs/",graph),joinpath(parentDir,"pipeline/graphs/$graph"))
+	if !isfile(joinpath(mainDir,"pipeline/graphs/$graph"))
+		cp(joinpath(mainDir,"input/graphs/",graph),joinpath(mainDir,"pipeline/graphs/$graph"))
 	end
 end
 

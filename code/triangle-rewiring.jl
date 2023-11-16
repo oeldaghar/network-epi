@@ -1,6 +1,7 @@
 # rough triangle preserving rewiring. not quite what we want but it'll do.
 
-include("code/graph-io.jl")
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
+include(joinpath(mainDir,"code/graph-io.jl"))
 
 using SparseMatrixDicts, MatrixNetworks, SparseArrays, ProgressMeter,Random 
 function random_triplet(n::Int)

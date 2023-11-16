@@ -2,7 +2,7 @@ using Distributed, ProgressMeter
 # addprocs(50)
 
 #allows for execution from command line as well as an ide so files can be run modularlly
-mainDir = joinpath(split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))])
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
 
 println("Loading scripts on workers")
 @everywhere include(joinpath($mainDir,"code/fast-diffusion.jl"))
