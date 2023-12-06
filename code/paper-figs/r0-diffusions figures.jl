@@ -308,6 +308,7 @@ function r0_qpercent_contours(gname::String,aggregated_data::Dict;
 end
 
 
+### Portion for making figures for R0 diffusions - this is the spatial figure in the paper (GeometricCommunities) ###
 gname = "study-25-150.smat"
 
 gs = ["study-25-1.smat","study-25-2.smat","study-25-150.smat"]

@@ -93,3 +93,61 @@ function make_ncp(gname::String;gpath::String="",
         writeSMAT(makeSparseMatrix(sets,size(A,1)),dst*"ncpmat-$gname")
     end
 end
+
+#old code needed for some of the plotting - particular for missed sets 
+function ncpmat_to_sets(ncpmat::SparseMatrixCSC)
+    S = Vector{Set{Int}}(undef,size(ncpmat,1))
+    @inbounds for i=1:size(ncpmat,1)
+        S[i] = Set{Int}()
+    end
+    ei,ej,ev = findnz(ncpmat)
+    @inbounds for k=1:length(ei)
+        push!(S[ei[k]],ej[k])
+    end
+    S
+end
+
+using Hexagons
+function xy2inds_(x::AbstractArray,y::AbstractArray,
+    bins::Union{NTuple{1,Int},NTuple{2,Int},Int})
+
+    if length(bins) == 2
+        xbins, ybins = bins
+    else
+        xbins, ybins = (bins...,bins...)
+    end
+    xmin, xmax = extrema(x)
+    ymin, ymax = extrema(y)
+    xspan, yspan = xmax - xmin, ymax - ymin
+    xsize, ysize = xspan / xbins, yspan / ybins
+    x0, y0 = xmin - xspan / 2,ymin - yspan / 2
+
+    inds = Dict{(Tuple{Int, Int}), Vector{Int}}()
+    cnts = Dict{(Tuple{Int, Int}), Int}()
+
+    for i in eachindex(x)
+        h = convert(HexagonOffsetOddR,
+                    cube_round(x[i] - x0 + xsize, y[i] - y0 + ysize, xsize, ysize))
+        idx = (h.q, h.r)
+
+        cnts[idx] = 1 + get(cnts,idx,0)
+        inds[idx] = push!(get(inds,idx,Vector{Int}()),i)
+    end
+    inds,xsize,ysize,x0,y0
+end
+function inds2xy_(inds::Dict{S,T},xsize, ysize, x0, y0) where {S,T}
+    nhex = length(inds)
+    xh = zeros(nhex)
+    yh = zeros(nhex)
+    vh = zeros(Int,nhex)
+    k = 0
+    for (idx, s) in inds
+        k += 1
+        xx,yy = Hexagons.center(HexagonOffsetOddR(idx[1], idx[2]),
+        xsize, ysize, x0, y0)
+        xh[k] = xx
+        yh[k] = yy
+        vh[k] = length(s)
+    end
+    xh,yh,vh
+end

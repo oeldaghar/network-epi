@@ -1,6 +1,8 @@
-parent_path = "/p/mnt/scratch/network-epi/"
-include(joinpath(parent_path,"code/graph-io.jl")) 
-include(joinpath(parent_path,"code/ncp/ncpplots1.jl")) 
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
+
+include(joinpath(mainDir,"code/graph-io.jl")) 
+include(joinpath(mainDir,"code/ncp/ncpplots1.jl")) 
 
 using DelimitedFiles
 using DataFrames
