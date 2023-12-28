@@ -464,60 +464,13 @@ plot!(f,size=(600,400),dpi=1000,colorbar=true,
 
 
 
-##
+
+#################### FINAL VERSION ###############################
 hs = ["commutes-all","mexico", "filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp","enron","anon", #row 3
     "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
-    #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
-gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
-titles = ["US Commutes", "Mexico City\nTrace", "Filtered\nUS Flows",
-    "Sparsified\nCollege-Illinois", "Sparsified\nCollege-Penn", "Sparsified\nCollege-Wisc.",    
-    "Collaboration", "Email", "Facebook\nInteractions",
-    "Citation", "Slashdot","Flickr",    
-    "Local\nGeometric", "Geometric\nCommunities", "Random Walk\nCommunities"] 
-    # "Config. Model of Mexico City Trace", "Config. Model of  Sparse. FB-Illinois", "Randomized Citation"]
-nlines=[3,3,3, 2,2,2, 2,2,2, 2,2,2, 3,3,3]#, 1,1,1] 
-
-#testing CBL2
-cstring = "CBL2"
-
-fs = map(x -> makefig(x[1];title=x[2],nlines=x[3],color=cgrad(cmap("CBL2")[75:230])), zip(gnames, titles,nlines))
-
-
-#layout
-# heights = map(nl -> 15+(nl+1)*35, [2.5,2,1.5,3,1.8]);#,0.5]);
-heights = map(nl -> 15+(nl+1)*35, [3,2,2,2,3]);#,0.5]);
-totalh = sum(heights)
-heights[end]=round(Int,heights[end]*1.31)
-heights = heights /sum(heights)
-
-heights = [3,2,2,2,3]
-heights = heights /sum(heights)
-
-#plotting
-newf = Plots.plot(fs...,
-        layout=grid(5,3,heights=heights,widths=[0.33,0.33,0.28]/(0.33+0.33+0.28)),
-        size=(1000,1200),
-        margin=-5Measures.mm)
-
-plot!(newf,dpi=1000)
-
-
-if typeof(cstring)==Symbol
-  cstring = string(cstring)
-end
-# savefig(newf, "code/paper-figs/fig2/epidemic-ncps-fig-2-v2-$cstring-$lower-$upper.pdf")
-savefig(newf, "code/paper-figs/fig2/epidemic-ncps-cbl2-v3.png")
-
-
-#################### 
-hs = ["commutes-all","mexico", "filtered", #row1
-    "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
-    "dblp","enron","anon", #row 3
-    "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
 titles = ["US Commutes", "Mexico City\nTrace", "Filtered\nUS Flows",
@@ -561,14 +514,15 @@ newf = Plots.plot(ps...,
         left_margin=-7Measures.mm,
         right_margin=-2Measures.mm)
 
-plot!(newf,dpi=300)
+plot!(newf,dpi=1000)
 savefig(newf, "code/paper-figs/fig2/epidemic-ncps-final.png")
+savefig(newf, "code/paper-figs/fig2/epidemic-ncps-final.pdf")
 
 #saving individual plots 
 for (ind,f) in enumerate(ps)
   gname = gnames[ind]
   ff = deepcopy(f)
-  plot!(ff,size=(300,1200/5),dpi=300)
+  plot!(ff,size=(300,1200/5),dpi=1000)
   Plots.savefig(ff,"code/paper-figs/fig2/individual-plots/epidemic-ncp-$(gname[1:end-5]).png")
 end
 

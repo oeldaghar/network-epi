@@ -301,7 +301,7 @@ hs = ["commutes-all", "mexico","filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp", "enron", "anon", #row 3
     "cit-HepPh", "slashdot", #"flickr", #skip flickr for now 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs)
 
@@ -360,7 +360,7 @@ nlines_vec = [
 # plot!(newf[1],right_margin=0.5Measures.mm)
 # plot!(newf[2],right_margin=0.5Measures.mm)
 
-
+gnames,beta_vec,nlines_vec = [gnames[end]],[beta_vec[end]],[nlines_vec[end]]
 for ind = 1:lastindex(gnames)
     gname = gnames[ind]
     test_fs = makefigs(gnames[ind],beta_vec[ind],nlines_vec[ind],40)
