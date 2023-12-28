@@ -6,8 +6,10 @@ using MatrixNetworks
 using Arpack
 using DelimitedFiles
 
-parentDir = "/p/mnt/scratch/network-epi/"
-include(joinpath(parentDir,"code/graph-io.jl"))
+#allows for execution from command line as well as an ide so files can be run modularlly
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
+
+include(joinpath(mainDir,"code/graph-io.jl"))
 
 #only do this for base graphs 
 gpath = "input/graphs/"
@@ -63,7 +65,7 @@ data = get_graph_info(["study-25-1.smat","study-25-2.smat","study-25-150.smat"])
 #will do formatting for the tabular part only. so use "&" as delimiter, and end lines with \\
 # format each row and append to file. final edits will be made in latex
 
-fname = joinpath(parentDir,"code","paper-figs","graph-stats","graph-statistics-table.txt")
+fname = joinpath(mainDir,"code","paper-figs","graph-stats","graph-statistics-table.txt")
 open(fname,"w") do io
     for row in data 
         newrow = join(row," & ")*" \\\\ "

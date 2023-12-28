@@ -489,7 +489,7 @@ hs = ["commutes-all","mexico", "filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp","enron","anon", #row 3
     "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]#"cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
 titles = ["US Commutes", "Mexico City\nTrace", "Filtered\nUS Flows",
@@ -553,8 +553,9 @@ newf = Plots.plot(figs...,
 # plot!(newf,inset = (bbox(0, 0, 0.05, 0.05, :center,:center)))
 # annotate!(newf,inset = (bbox(0, 0, 0.05, 0.05, :center,:center)))
 # annotate!(newf, (mean(xlims(f)), ymin+0.25(ymax-ymin), text(title, 12, :left, RGB(0.0,0.0,0.0), :center)))
-plot!(newf,dpi=300)
-Plots.savefig(newf,"code/paper-figs/eigenvalue-plots/eigvals-plot-v3.png")
+plot!(newf,dpi=1200)
+Plots.savefig(newf,"code/paper-figs/eigenvalue-plots/eigvals-plot-base.png")
+Plots.savefig(newf,"code/paper-figs/eigenvalue-plots/eigvals-plot-base.pdf")
 
 
 inds = [1;2;3;13;14;4;7;9;10;12]
@@ -595,7 +596,8 @@ hs = ["commutes-all","mexico", "filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp","enron","anon", #row 3
     "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150",#"cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat",
+    "cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
 titles = ["US\nCommutes", "Mexico City\nTrace", "Filtered\nUS Flows",
@@ -614,7 +616,7 @@ betas = [[0.003],[0.05],[0.03],
     [0.1],[0.1],[0.1],
     [0.1],[0.06],[0.1],
     [0.008],[0.04],[0.04],
-    [0.06],[0.02],[0.15]]
+    [0.06],[0.02],[0.175]]
 
 ps = map(x -> qpercent_contours(x[1],betas=x[2],colorbar=false,add_labels=false)[2],zip(gnames,betas))
 ps = vcat(ps...)
@@ -673,10 +675,10 @@ for (i,f) in enumerate(figs)
 end
 
 #for saving individual plots
-for f in figs
-    plot!(f,xticks=false,yticks=false)
-end
-figs[1]
+# for f in figs
+#     plot!(f,xticks=false,yticks=false)
+# end
+# figs[1]
 
 #manually handle flickr
 f = figs[12]
@@ -696,7 +698,8 @@ newf = Plots.plot(figs...,
         top_margin=-0.5*Measures.mm,
         link=:y)
 plot!(newf,dpi=1500)
-Plots.savefig(newf,"code/paper-figs/heatmaps/uplot-v1.png")
+Plots.savefig(newf,"code/paper-figs/heatmaps/uplot-final.png")
+Plots.savefig(newf,"code/paper-figs/heatmaps/uplot-final.pdf")
 
 #high resolution image of mexico city for explatory figure and for colorbar
 f = deepcopy(ps[2])
@@ -1236,7 +1239,7 @@ hs = ["commutes-all","mexico", "filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp","enron","anon", #row 3
     "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
 titles = ["US\nCommutes", "Mexico City\nTrace", "Filtered\nUS Flows",
@@ -1521,7 +1524,7 @@ hs = ["commutes-all","mexico", "filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp","enron","anon", #row 3
     "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
 
@@ -1550,15 +1553,16 @@ for gname in gnames
 end
 
 #single graph as an example 
-gname = gnames[14]
+gname = gnames[15]
 
 ps = strip_info(gname,figs_data)
 ps = deepcopy(ps)
-modify_exterior_plots!(ps[1:18]) #implicitly picking values of beta
-newf = layout_plots(ps[1:18]) #actually lay them out 
+modify_exterior_plots!(ps[9:end]) #implicitly picking values of beta
+newf = layout_plots(ps[9:end]) #actually lay them out 
 
 plot!(newf,dpi=1000)
 Plots.savefig(newf,"/p/mnt/scratch/network-epi/code/paper-figs/heatmaps/full-params-$(gname[1:end-5]).png")
+Plots.savefig(newf,"/p/mnt/scratch/network-epi/code/paper-figs/heatmaps/full-params-$(gname[1:end-5]).pdf")
 
 
 #just to check every rock..

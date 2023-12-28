@@ -6,16 +6,15 @@
 # second shows local structure versus error for CM
 # second shows local structure versus error for GNP 
 # one for CM and another for GNP 
-parent_path = "/p/mnt/scratch/network-epi/"
-include(joinpath(parent_path,"code/graph-io.jl"))
-include(joinpath(parent_path,"code/data-io.jl")) 
-# include(joinpath(parent_path,"code/ncp/ncpplots1.jl")) 
+mainDir = joinpath("/",split(abspath(""),"/")[1:findlast("network-epi" .== split(abspath(""),"/"))]...)
+include(joinpath(mainDir,"code/graph-io.jl"))
+include(joinpath(mainDir,"code/data-io.jl")) 
 
 using DelimitedFiles
 using DataFrames
 using Measures
 using Pkg
-using PerceptualColourMaps
+# using PerceptualColourMaps
 using LaTeXStrings
 using StatsBase
 using ProgressMeter
@@ -498,7 +497,7 @@ hs = ["commutes-all","mexico", "filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp","enron","anon", #row 3
     "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs)
 titles = ["US Commutes", "Mexico City", "US Flows",
@@ -534,7 +533,7 @@ hs = ["commutes-all","mexico", "filtered", #row1
     "cn-moduillinois", "cn-Penn", "cn-modWiscon", #row2...
     "dblp","enron","anon", #row 3
     "cit-HepPh", "slashdot", "flickr", 
-    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat"]
+    "geometric","study-25-150","cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat"]
     #  "rewired-10000.0-modmexico","rewired-10000.0-cn-moduillinois","er-10000.0-dblp-cc"]
 gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs)
 titles = ["US-COMMUTES", "MEX", "US-FLO",
@@ -548,7 +547,7 @@ betas = [[0.003],[0.05],[0.03],
     [0.1],[0.1],[0.1],
     [0.1],[0.06],[0.1],
     [0.008],[0.04],[0.04],
-    [0.06],[0.02],[0.15]]
+    [0.06],[0.02],[0.175]]
 
 # gnames = ["study-11-2023-0-noweak.smat",
 # "study-11-2022-1.smat",
@@ -1146,6 +1145,7 @@ spearmanrho(x_avgd,ys)
 spearmanrho(x_lam,ys)
 spearmanrho(x_auc,ys)
 
+spearmanrho(data,ys)
 # using Statistics
 # using GLM
 
@@ -1265,8 +1265,8 @@ f
 
 using DelimitedFiles
 pdata = ["gname", "avgd", "lam1","normalized_epi_area","normalized_pagerank_area","qimpact"]
-fname = "plotting_data-log_local_structure-qimpact-final.txt"
-open("/p/mnt/scratch/network-epi/$fname", "w") do io
+fname = "plotting_data-log_local_structure-qimpact-final-v1.txt"
+open(joinpath(mainDir,fname), "w") do io
   data = vcat(reshape(pdata,(1,6)),hcat(newgnames, x_avgd, x_lam, x_epi, x_acl, ys ))
   writedlm(io, data)
 end
@@ -1295,7 +1295,7 @@ Slashdot0811.smat	12.129782833505688	131.34180088134937	0.19874030474774024	0.26
 flickr-links-sym.smat	19.048506084953033	1240.2994866017648	0.4491472369926089	0.8896117034306129	0.48610223432126065
 geometric-100000-2d-1-20.smat	14.10362	17.656085282327656	1.2157989640131326	1.1049944836477057	0.9976684358096735
 study-25-150.smat	31.91664	92.06024865135673	0.7295101154770703	0.6506595372753741	0.8541348350982128
-cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat	5.5292383895859345	28.699666566735438	0.8762128645294875	1.2927178132443748	0.5934490642009762
+cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat	4.797183617495958	24.162599721644977	0.8723806399540358	1.28786653996601	0.660070091111056
 rewired-10000.0-commutes-all.smat	100.12270597960871	175.25348068086936	0.054582274752836446	0.05175692844529757	0.05211631372895298
 rewired-10000.0-modmexico-city.smat	20.93038131141462	255.7685088746265	0.10557350754680107	0.1039882202508409	0.2701438649614809
 rewired-10000.0-covidflows-2020_08_31-filtered-20.smat	19.529410106023008	43.88795309441521	0.10840859203831028	0.08563910535908704	0.03612062272692662
@@ -1310,13 +1310,16 @@ rewired-10000.0-Slashdot0811.smat	12.030661840744571	117.60497207757928	0.101798
 rewired-10000.0-flickr-links-sym.smat	18.835509083747723	733.3275303637621	0.08338540137219122	0.10326686317304863	0.5349237116977926
 rewired-10000.0-geometric-100000-2d-1-20.smat	14.10216	15.071175571574479	0.08713105640078919	0.09133562859710925	0.002709943725980768
 rewired-10000.0-study-25-150.smat	31.8948	46.59469195733523	0.06072250724950518	0.058139146603944834	0.00794432861171801
-rewired-10000.0-cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.9-0.0-100-5.smat	5.54234955843089	22.775129669060846	0.1628551463296426	0.2380636406325244	0.10468803035232332
+rewired-10000.0-cl-lfr-100000-3.00-2.00-0.15-1-2000-5-500-17-connect-graph-invdegdepth-8000-0.5-0.0-100-5.smat	4.818749098997055	19.887516284706287	0.17196757970894258	0.3093574282527879	0.11154913561440294
 """), header=true)[1]
 
-
+#ppr data and qimpact data 
 xdata,ydata = data[:,5],data[:,end]
-spearmanrho(xdata,ydata)
 
+spearmanrho(data[:,2],data[:,end])
+spearmanrho(data[:,3],data[:,end])
+spearmanrho(data[:,4],data[:,end])
+spearmanrho(data[:,5],data[:,end])
 
 figs = []
 fsize = (525,400)
@@ -1365,7 +1368,7 @@ ann_offsets = [
   (0,-4e-2), (-8e-2,-3e-2), (0,4e-2), #uill, penn, wisc 
   (-1e-1,-4e-2), (0,-4e-2), (3e-2,0), #col, ema, int
   (2e-2,0), (2e-2,0), (-6e-2,0), #cit, sla, fli
-  (-1e-2,4e-2), (0,4e-2), (0,3e-2), #g, gc, rwc 
+  (-1e-2,4e-2), (0,4e-2), (0,-3e-2), #g, gc, rwc 
 
   #start of rewired variants 
   (-1e-3,4e-2), (-3.2e-2,1e-2), (-1e-2,4e-2), #com, mex, flo,
@@ -1397,7 +1400,7 @@ ann_offsets = [
   (0.2,-2e-2), (-1e-1,4e-2), (-3e-1,-3e-2), #uill, penn, wisc 
   (0.3,-3e-2), (-2,3e-2), (-4e-1,4e-2), #col, emi, int
   (0,4e-2), (1e0,-3e-2), (0,-4e-2), #cit, sla, fli
-  (0,-4e-2), (0,4e-2), (-4e-1,4e-2), #g, gc, rwc 
+  (0,-4e-2), (0,4e-2), (8e-2,-3e-2), #g, gc, rwc 
   
   #start of rewired variants 
   (-2e1,4e-2), (0,4e-2), (0,4e-2), #comm, mex, flo
@@ -1429,14 +1432,14 @@ p = final_area_impact_plot(xdata,ydata)
 f = deepcopy(p)
 ann_offsets = [
   (-1e1,-5e-2), (0,-5e-2), (-5,5e-2),  #comm, mex, flo
-  (0.25,-4e-2), (-5,4e-2), (-4,-3e-2), #uill, penn, wisc 
+  (0.25,-4e-2), (0,4e-2), (-4,-3e-2), #uill, penn, wisc 
   (0.5,4e-2), (-10,-3e-2), (-1e0,4e-2), #col, emi, int
   (0,-4e-2), (1e1,-1e-2), (0,-4e-2), #cit, sla, fli
-  (0,-5e-2), (0,5e-2), (4,-1e-2), #g, gc, rwc 
+  (0,-5e-2), (0,5e-2), (-2,3e-2), #g, gc, rwc 
   
   #start of rewired variants 
   (-1e1,4e-2), (0,4e-2), (0,4e-2), #comm, mex, flo
-  (-5,-4e-2), (-2e-1,3.5e-2), (-9,-1e-2), #uill, penn, wisc
+  (-5,-4e-2), (0,-2e-2), (-9,-1e-2), #uill, penn, wisc
   (-5e0,4e-2), (-1e1,-4e-2), (0,-4e-2), # col, emi, int 
   (0,-4e-2), (-2e1,3e-2), (-1e0,4e-2), #cit, sla, fli
   (1e0,0), (3e0,0), (1e0,3e-2), # g, gc, rwc 
@@ -1471,7 +1474,8 @@ plot!(newf[2],ylabel="",
 strip_ytick_labels(newf[3])
 plot!(newf[3],ylabel="")
 
-plot!(newf,dpi=800)
+plot!(newf,dpi=1000)
+Plots.savefig(newf,"/p/mnt/scratch/network-epi/code/paper-figs/example-figs/qimpact-v4.pdf")
 Plots.savefig(newf,"/p/mnt/scratch/network-epi/code/paper-figs/example-figs/qimpact-v4.png")
 
 
@@ -1524,8 +1528,10 @@ plot!(newf[2],ylabel="",
 plot!(newf[1],xlabel="Normalized Epidemic NCP Area")
 plot!(newf[2],xlabel="Normalized PPR NCP Area")
 
-plot!(newf,dpi=800)
+plot!(newf,dpi=1000)
+Plots.savefig(newf,"/p/mnt/scratch/network-epi/code/paper-figs/example-figs/qimpact-epi-vs-ppr.pdf")
 Plots.savefig(newf,"/p/mnt/scratch/network-epi/code/paper-figs/example-figs/qimpact-epi-vs-ppr.png")
+
 
 
 
@@ -1648,7 +1654,7 @@ f
 
 
 
-
+#=
 study_data = readdlm(IOBuffer("""gname	avgd	lam1	normalized_epi_area	normalized_pagerank_area	qimpact
 study-11-2023-0-noweak.smat	10.70584	23.30000354864058	1.2169331402638752	1.1264883987689756	0.9967272201700336
 study-11-2022-1.smat	11.20332	23.31313096515302	0.5631727158998859	0.6926873894434257	0.9959306651540681
@@ -1732,3 +1738,4 @@ ann_offsets = [
   (-1e-2,-3e-2), (-3e-2,0), (0,4e-2), #cit, sla, fli
   (-1e-2,-4e-2), (-1e-2,-4e-2), (0,-4e-2), #g, gc, rwc 
 ]
+=#
