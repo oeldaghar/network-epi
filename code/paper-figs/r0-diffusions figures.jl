@@ -68,6 +68,9 @@ function load_diffusion_data(gname::String,eig_data::Dict;
 
   # rps = ["10000.0", "1000.0", "100.0", "50.0", "10.0", "5.0",]
   gnames = getgnames(gname,"pipeline/graphs/")#["rewired-10000.0-$gname"; gname; "er-10000.0-$gname"]
+  #may need to remove the "internal" filter for study graphs..
+  filter!(x->!occursin("internal",x),gnames)
+  filter!(x->!occursin("triangle",x),gnames)
   # gnames = [gname]
   g = canonical_graph_name(gname)
 
@@ -114,6 +117,7 @@ aggregated_data = Dict{String,Dict}()
 
   # graph_variants = ["rewired-10000.0-$gname"; gname; "er-10000.0-$gname"]
   graph_variants = getgnames(gname,"pipeline/graphs/")
+  filter!(x->haskey(data,x),graph_variants)
   for h in graph_variants
     h_data = data[h]
     #process betas for a single graph 
@@ -307,11 +311,22 @@ function r0_qpercent_contours(gname::String,aggregated_data::Dict;
     return figs,r0s
 end
 
-
 ### Portion for making figures for R0 diffusions - this is the spatial figure in the paper (GeometricCommunities) ###
-gname = "study-25-150.smat"
+gname = "study-25-1.smat"
+figs,rs = r0_qpercent_contours(gname,aggregated_data,r0s=[28.0])
+f = figs[1]
+plot!(f,
+    xticks=(1:25,["" for i=1:25]),
+    yticks=(1:16,["" for i=1:16]),
+    tick_direction=:out,
+    framestyle=true,
+    xlims=(1.05,24.95),ylims=(1.05,15.95),
+    colorbar=false,
+    margins=0Measures.mm,
+    dpi=500)
 
-gs = ["study-25-1.smat","study-25-2.smat","study-25-150.smat"]
+
+gnames = ["study-25-1.smat","study-25-2.smat","study-25-150.smat"]
 figs,rs = r0_qpercent_contours(gs[3],aggregated_data)
 
 
@@ -319,11 +334,34 @@ f = figs[8]
 plot!(f,colorbar=false,xticks=false,yticks=false,margins=0Measures.mm,
     dpi=500)
 
+function add_tickmarks(f,xmirror=false,ymirror=false)
+  plot!(f,xmirror=xmirror,ymirror=ymirror,
+    tick_direction=:out,
+    xticks = (range(1.5,24.5,25),["" for i=1:25]),xrotation=90,
+    top_margin=2Measures.mm,
+    yticks = (range(1.5,15.5,16),["" for i=1:16]),
+    colorbar = false,framestyle=true,
+    xlims=(1.05,24.95),ylims=(1.05,15.95))
+  return f
+end
 #make highresolution figures 
+fs = []
 for gname in gs 
   figs,rs = r0_qpercent_contours(gname,aggregated_data)
   f = figs[8] #r0=28
-  plot!(f,colorbar=false,xticks=false,yticks=false,margins=0Measures.mm,
-    dpi=500)
-  Plots.savefig(f,joinpath(mainDir,"code","paper-figs","spatial-figs","uplot-r0-28-$(gname[1:end-5])"))
+  plot!(f,
+    grid=false,
+    xticks=(range(1.5,24.5,25),["" for i=1:25]),
+    yticks=(range(1.5,15.5,16),["" for i=1:16]),
+    tick_direction=:out,
+    framestyle=true,
+    xlims=(0.95,25.05),ylims=(0.95,16.05),
+    colorbar=false,
+    margins=0Measures.mm)
+  plot!(f,dpi=500)
+  push!(fs,f)
+  Plots.savefig(f,joinpath(mainDir,"code","paper-figs","spatial-figs","uplot-r0-28-$(gname[1:end-5]).pdf"))
+  Plots.savefig(f,joinpath(mainDir,"code","paper-figs","spatial-figs","uplot-r0-28-$(gname[1:end-5]).png"))
+  println("fpath: $(joinpath(mainDir,"code","paper-figs","spatial-figs","uplot-r0-28-$(gname[1:end-5]).png"))")
 end
+

@@ -31,6 +31,31 @@ rseeds = 1:length(parameters)
 end
 
 
+#making similar density matrics (less layers)
+nlayers = [4]
+parameters = Iterators.product(groupsize,nlayers,avgd,decay_factor)
+
+rseeds = 1:length(parameters)
+@showprogress for (i,(gs,nl,d,decay)) in enumerate(parameters)
+    @show (gs,nl,d,decay)
+    Random.seed!(rseeds[i])
+    A = nested_sbm(gs,nl,d,decay)
+    A = largest_component(A)[1]
+
+    #generate spy plot and increase resolution
+    f = spy(A)
+    plot!(f,dpi=500)
+    #fname minus the extension
+    fname = "nested-sbm-$gs-$nl-$d-$decay-$(rseeds[i])-density"
+    #save pdf and png version 
+    Plots.savefig(f,"code/paper-figs/example-figs/$fname.pdf")
+    Plots.savefig(f,"code/paper-figs/example-figs/$fname.png")
+end
+
+
+
+
+
 #=
 ncp,sets = make_ncp(A)
 x = map(x->min(ncp.size[x],size(A,1)-ncp.size[x]),1:size(ncp,1))

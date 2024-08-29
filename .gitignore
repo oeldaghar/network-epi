@@ -3,3 +3,8 @@ input/graphs/*
 pipeline/
 code/paper-figs/*
 !code/paper-figs/*.jl
+scratch/*
+compressed_*
+private-readme.md
+code/hierarchical-random-graphs/readme.md
+code/hierarchical-random-graphs/graph-stats.jl

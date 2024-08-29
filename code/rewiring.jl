@@ -78,7 +78,7 @@ total_steps = 1000000
 rseed = 7
 
 gnames = readdir(gpath)
-gnames = getgnames("study-25-",gpath)[end:end]
+gnames = getgnames("nested",gpath)
 filter!(x->endswith(x,".smat"),gnames)
 for gname in gnames 
     params[gname]=collect(0.1:0.1:1.0) 

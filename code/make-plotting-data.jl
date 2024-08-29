@@ -513,9 +513,14 @@ for (ind,title) in enumerate(titles)
     f = figs[ind]
     # plot!(f,grid=false,xlabel="",ylabel="",title=title,
     #     titlefontsize=12,margins=0Measures.mm,xaxis=false)
-    plot!(f,grid=false,xlabel="",ylabel="",xaxis=false,
+    plot!(f,grid=false,xlabel="",ylabel="",#xmirror=true,#xaxis=false,
         leftmargin=1Measures.mm,
-        bottommargin=-5Measures.mm)
+        bottommargin=1Measures.mm,
+        xticks=(1:25,["" for i=1:25]),
+        xtickdirection=:out)
+    # rps = ["10000";"100";"10";"1";"0.1";"0";"0.1";"1";"10";"100";"10000"]
+    # plot!(f,xticks=([1;3;6;8;10;13;16;18;20;23;25],rps),xrotation=90,guidefontweight="bold",
+        # xtickdirection=:out)
 
     ymin,ymax = ylims(f)
     annotate!(f, (mean(xlims(f)), ymin+0.25(ymax-ymin), text(title, 12, :left, RGB(0.0,0.0,0.0), :center)))
@@ -523,6 +528,11 @@ for (ind,title) in enumerate(titles)
     #increase limit for y to avoid cutting off markers
     plot!(f,ylims = ybounds[ind])
 end
+
+#manually handle flickr 
+# f = figs[12]
+# rps = ["10000";"100";"10";"1";"0.1";"0";"0.1";"1";"10";"100";"10000"]
+# plot!(f,xticks=([1;3;6;8;10;13;16;18;20;23;25],rps),xrotation=90,guidefontweight="bold")
 
 
 #labels for specific plots
@@ -558,17 +568,24 @@ Plots.savefig(newf,"code/paper-figs/eigenvalue-plots/eigvals-plot-base.png")
 Plots.savefig(newf,"code/paper-figs/eigenvalue-plots/eigvals-plot-base.pdf")
 
 
+#turn off all but top left 
 inds = [1;2;3;13;14;4;7;9;10;12]
+for ind in inds[1:5]
+    plot!(figs[ind],xmirror=true)
+end
+#manually handle flickr 
+plot!(figs[12],xticks=([1;3;6;8;10;13;16;18;20;23;25],["" for i=1:11]))
 newf = Plots.plot(figs[inds]...,
     layout=grid(2,5,heights=[0.5,0.5],widths=[1/5 for i=1:5]),
-    size=(1500,350),
+    size=(1500,450),
     link=:x,
-    top_margin=1Measures.mm,
-    bottom_margin=-1Measures.mm,
+    top_margin=2Measures.mm,
+    bottom_margin=2Measures.mm,
     right_margin=0Measures.mm,
     ygrid=false)
     # grid=(:y, :black, :dot, 1, 0.9))
 plot!(newf,dpi=800)
+Plots.savefig(newf,"code/paper-figs/eigenvalue-plots/eigvals-plot-v2.png")
 Plots.savefig(newf,"code/paper-figs/eigenvalue-plots/eigvals-plot-v2.png")
     
 
@@ -914,6 +931,9 @@ betas = [
 
 #triangle weighted diffusion plots
 
+[0.0001],[0.003],[0.001],[0.005],[5e-4],
+[0.18],[0.01],[0.15],[0.001],[0.03]
+inds = [1;2;3;13;14;4;7;9;10;12]
 ps = map(x -> qpercent_contours_triangles_diffusions(x[1],betas=x[2],colorbar=false,add_labels=false)[2],zip(gnames,betas))
 ps = vcat(ps...)
 
@@ -1000,6 +1020,45 @@ newf = Plots.plot(figs...,
         )
 plot!(newf,dpi=1500)
 Plots.savefig(newf,"code/paper-figs/heatmaps/uplot-triangles-v1.png")
+
+
+### alternate layout for PNAS. 
+inds = [1;2;3;13;14;4;7;9;10;12]
+newfigs = deepcopy(figs[inds])
+for (i,f) in enumerate(newfigs)
+    xmirror,ymirror = false,false
+    if i in [1;2;3;4;5]
+        xmirror = true
+    end
+    if i in [5;10]
+        ymirror = true
+    end
+    f = add_tickmarks_triangle(f,xmirror,ymirror)
+    
+    if i in vcat(2:4,7:9)
+        plot!(f,yticks=false)
+    end
+    newfigs[i] = f
+end
+
+#manually handle flickr
+f = newfigs[10]
+# plot!(f,xticks=false,xlims=(1,11))
+plot!(f,xticks=(range(1.5,3.5,4),["" for i=1:4]), tick_direction=:out,xlims=(1,4))
+
+
+newf = Plots.plot(newfigs...,
+        layout=grid(2,5,heights=[0.5,0.5],widths=[1/5 for i=1:5]),
+        size=(1500,500),
+        bottom_margin=-3Measures.mm,
+        left_margin=-2Measures.mm,
+        right_margin=-1Measures.mm,
+        link=:y,
+        dpi=800)
+
+Plots.savefig(newf,"code/paper-figs/heatmaps/triangle-uplot-trimmed.pdf")
+Plots.savefig(newf,"code/paper-figs/heatmaps/triangle-uplot-trimmed.png")
+
 
 
 
@@ -1711,3 +1770,43 @@ plot!(fs[3],colorbar=false,ymirror=true,
 Plots.savefig(fs[1],"/p/mnt/scratch/network-epi/code/paper-figs/example-figs/meso-$(gnames[1][1:end-5]).png")
 Plots.savefig(fs[2],"/p/mnt/scratch/network-epi/code/paper-figs/example-figs/meso-$(gnames[2][1:end-5]).png")
 Plots.savefig(fs[3],"/p/mnt/scratch/network-epi/code/paper-figs/example-figs/meso-$(gnames[3][1:end-5]).png")
+
+
+
+
+
+hs = ["cn-moduillinois","moduillinois"]
+gnames = map(h->h=="" ? "" : getgnames(h,"pipeline/graphs/")[1], hs) 
+titles = ["Sparsified\nCollege-Illinois", "College-Illinois"] 
+
+
+betas = [[0.1],[0.005]]
+
+ps = map(x -> qpercent_contours(x[1],betas=x[2],colorbar=false,add_labels=false)[2],zip(gnames,betas))
+ps = vcat(ps...)
+ps[1]
+ps[2]
+#for tinkering and making adjustments without having to remake figs from scratch
+figs = deepcopy(ps)
+
+#remove text, and retitle
+#this is specific to Julia v1.5.1 w/ pyplot backend. not sure why there's issues..
+for (ind,title) in enumerate(titles)
+    f = figs[ind]
+    # title = title*"\nSEIR($(betas[ind][1]),0.05)"
+    # title = title*"\nSEIR($(betas[ind][1]),0.05)"
+    # plot!(f,framestyle=:none,xlabel="",ylabel="",title=title,
+    #     titlefontsize=12,margins=0Measures.mm)
+    ymin,ymax = ylims(f)
+    plot!(f,framestyle=:none,xlabel="",ylabel="",title="",
+        xguidefontsize=12,
+        right_margin=0Measures.mm,
+        colorbar=false,
+        dpi=500)
+    annotate!(f,[(mean(xlims(f)),ymin+0.8*(ymax-ymin),text(title, 16, :center, :center,RGB(0.0,0.0,0.0)))])
+end
+figs[1]
+figs[2]
+#save high res versions 
+Plots.savefig(figs[1],"code/paper-figs/scratch/sparse-college-illinois-seir-0.1-0.05.pdf")
+Plots.savefig(figs[2],"code/paper-figs/scratch/college-illinois-seir-0.005-0.05.pdf")

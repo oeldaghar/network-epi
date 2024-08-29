@@ -65,22 +65,22 @@ function swap_triangles(A::SparseMatrixCSC, nsteps::Int)
   return R
 end
 
-gs = ["flickr","livejournal"]
-total_steps = 1000000
-rseed = 7
-Random.seed!(rseed)
-#ps = collect(0.1:0.1:1.0) 
-ps = [1.0] #for flickr  + livejournal
-seeds = abs.(rand(Int,length(ps)))
-gpath = "../data/graphs/"
-dst = gpath
-for g in gs
-  println("working on graph $g")
-  gname = getgnames(g,gpath)[1]
-  A = loadGraph(gname,gpath)
-  @showprogress for (i,p) in enumerate(ps)
-    Random.seed!(seeds[i])
-    B = swap_triangles(A,Int(p*total_steps))
-    writeSMAT(B,dst*"triangle-rewired-$p-$rseed-"*gname)
-  end
-end
+# gs = ["flickr","livejournal"]
+# total_steps = 1000000
+# rseed = 7
+# Random.seed!(rseed)
+# #ps = collect(0.1:0.1:1.0) 
+# ps = [1.0] #for flickr  + livejournal
+# seeds = abs.(rand(Int,length(ps)))
+# gpath = "../data/graphs/"
+# dst = gpath
+# for g in gs
+#   println("working on graph $g")
+#   gname = getgnames(g,gpath)[1]
+#   A = loadGraph(gname,gpath)
+#   @showprogress for (i,p) in enumerate(ps)
+#     Random.seed!(seeds[i])
+#     B = swap_triangles(A,Int(p*total_steps))
+#     writeSMAT(B,dst*"triangle-rewired-$p-$rseed-"*gname)
+#   end
+# end

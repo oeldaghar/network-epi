@@ -294,8 +294,8 @@ function cut_ncp_fig(gname::String,xbounds=(0.8,3e4),ybounds=(1e-3,1.2))
   return f
 end
 
-function ncp_fig(gname::String,xbounds=(0.8,3e4),ybounds=(1e-3,1.2))
-  x,y = load_ncp(gname)
+function ncp_fig(gname::String,xbounds=(0.8,3e4),ybounds=(1e-3,1.2);datadir="pipeline/data/")
+  x,y = load_ncp(gname,datadir)
   f = myhexbin_conditional(x,y,nbins=(80,60),
     color=cgrad(cmap("CBL2")[75:230]),
     ylims=ybounds,
@@ -305,12 +305,17 @@ function ncp_fig(gname::String,xbounds=(0.8,3e4),ybounds=(1e-3,1.2))
     ylims=ybounds,
     xlims=xbounds)
   plot!(f,yticks=([1e-3,1e-2,1e-1,1]),
-    xlabel="Size",ylabel="Size of Cut")
+    xlabel="Size",ylabel="Conductance")
   return f
 end
 
+gname = getgnames("nested","input/graphs/")[1]
+f = ncp_fig(gname,(0.8,5e4),(1e-4,1.2),datadir="/p/mnt/scratch/network-epi/pipeline/data/")
+plot!(f,title="$(gname[1:end-5])\nnnodes: $(50*2^10), groupsize: $(split(gname,"-")[3]), layers: $(split(gname,"-")[4]),\navgd: $(split(gname,"-")[5]), decay_rate: $(split(gname,"-")[6])",
+topmargin=6Measures.mm)
+
 gnames = getgnames("study-25","input/graphs/")
-gname = gnames[end]
+gname = gnames[1]
 ncp_fig(gname,(0.8,6e4))
 plot!(title=gname,ylabel="Conductance")
 

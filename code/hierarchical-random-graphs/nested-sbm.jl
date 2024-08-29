@@ -128,3 +128,6 @@ nnz(A)/lastindex(A,1)
 #sparsity patterns 
 spy(A)
 =#
+
+spy(loadGraph(gnames[1],"input/graphs/"))
+gnames[1]

@@ -90,4 +90,4 @@ comms = next(enumerate(comm_dendogram))
 [len(x) for x in comms[1]]
 
 
-fir(igraph)
+dir(igraph)

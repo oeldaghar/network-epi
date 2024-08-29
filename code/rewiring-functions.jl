@@ -113,7 +113,7 @@ function swap_triangles(A::SparseMatrixCSC, nsteps::Int)
   # A = max.(A,A')
   n = size(A,1)
   W = SparseMatrixDict(n,n)
-  tris = collect(triangles(A))
+  tris = collect(MatrixNetworks.triangles(A))
   for tri in tris
     u,v,w = tri
     add_triangle!(W, (u,v,w))
