@@ -20,4 +20,30 @@ The first is mostly code that I modifed from David Gleich (https://github.com/dg
 The second was modified from https://github.com/RalphAS/HexBinPlots.jl for the missed sets computation.
 
 ## Data Sources
-For sources of data, please see the accompanying paper for appropriate citations.
+For sources of data, please see the accompanying paper for appropriate citations. We provide data in form of epidemic experiments as well as contact networks. This can be found at the following Zenodo repositories:
+
+1. https://zenodo.org/records/13881920
+2. https://zenodo.org/records/13881977
+
+The full set of data is ~80GB compressed and ~540GB uncompressed. Data can be obtained by running the following commands:
+
+```bash
+# fetch first batch of data
+wget --continue --recursive --level=1 --no-parent --no-directories \
+     --accept-regex '.*files/compressed_pipeline_[0-9]+$' \
+     --reject-regex '.*\?download=1' \
+     --reject "index.html*,*.tmp*" \
+     --trust-server-names \
+     -e robots=off \
+     "https://zenodo.org/records/13881920"
+# fetch second batch of data
+wget --continue --recursive --level=1 --no-parent --no-directories \
+     --accept-regex '.*files/compressed_pipeline_[0-9]+$' \
+     --reject-regex '.*\?download=1' \
+     --reject "index.html*,*.tmp*" \
+     --trust-server-names \
+     -e robots=off \
+     "https://zenodo.org/records/13881977"
+# combine files and uncompress
+ls -v compressed_pipeline_* | xargs cat | tar -xzvf -
+```
